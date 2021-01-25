@@ -7,6 +7,21 @@
 
 import Foundation
 
+
+
+public protocol Node {
+	var path: URL? {get set}
+	//var depth: Int {get set}
+
+	// Finalizes/Specifies the template but does not deploy it
+	func build(validRoot: URL) throws
+
+	// Actually performs the deploy action, for example creating the filesystem folders for a FilesystemTemplate
+	func deploy() throws
+}
+
+
+
 //A Node representing a Folder on the filesystem which can be created by use of a FilesystemTemplate
 public class FilesystemNode: Node {
 	//The name of the node
@@ -18,7 +33,7 @@ public class FilesystemNode: Node {
 	//The children of the node
 	public var children = [Node]()
 
-	public init(name: String, children: [Node]) {
+	public init(_ name: String, children: [Node] = []) {
 		self.name = name
 		self.children = children
 		//Recurrsively set the depth of the children
@@ -29,57 +44,59 @@ public class FilesystemNode: Node {
 	}
 
 	//Builds the final (non-template) version of the current node and all its children
-	public func build(validRoot: URL) {
+	public func build(validRoot: URL) throws {
 		//For a Folder, the URL is simply the
 		//self.path = validRoot.appendingPathComponent(self.name)
 		self.path = validRoot.appendingPathComponent(self.name, isDirectory: true)
 		//The children's root is the path of the current node
 		guard let childrenValidRoot = self.path else {
-			fatalError("Newly built path is invalid!! \(self)")
+			print("Newly built path is invalid!! \(self)")
+			throw TemplateValidationError.invalidInternalPath
 		}
 		//Recurrsively build the children using the newly constructed path
 		for child in self.children {
-			child.build(validRoot: childrenValidRoot)
+			try child.build(validRoot: childrenValidRoot)
 		}
 	}
 
 	//Deploys the node to the filesystem
-	public func deploy() {
+	public func deploy() throws {
 		guard let validRoot = self.path else {
-			fatalError("Couldn't validate internal path!")
+			throw TemplateDeploymentError.invalidInternalPath
 		}
 		debugPrint("Creating Path: \(validRoot)")
-		self.finalize()
+		try self.performCreate()
 		//Recurrsively build the children using the newly constructed path
 		for child in self.children {
 			print("|-")
-			child.deploy()
+			try child.deploy()
 		}
 	}
 
 	//Actually creates the directory
-	public func finalize() {
+	fileprivate func performCreate() throws {
 		guard let validRoot = self.path else {
-			fatalError("Couldn't validate internal path!")
+			throw TemplateValidationError.invalidInternalPath
 		}
 
 		do {
 			try FileManager.default.createDirectory(atPath: validRoot.path, withIntermediateDirectories: true, attributes: nil)
 		} catch let error as NSError {
 			print(error.localizedDescription);
+			throw TemplateDeploymentError.createDirectoryError(error: error)
 		}
 	}
 
-	public func setFinderTags() {
-		var rv = URLResourceValues()
-		rv.labelNumber = 2
-
-		do {
-			try self.path?.setResourceValues(rv)
-		} catch {
-			print(error.localizedDescription)
-		}
-	}
+//	public func setFinderTags() {
+//		var rv = URLResourceValues()
+//		rv.labelNumber = 2
+//
+//		do {
+//			try self.path?.setResourceValues(rv)
+//		} catch {
+//			print(error.localizedDescription)
+//		}
+//	}
 }
 
 
@@ -89,17 +106,19 @@ public class SymlinkNode: FilesystemNode {
 	//Target node must be a filesystemNode
 	public var targetNode: FilesystemNode
 
-	public init(name: String, target: FilesystemNode) {
+	public init(_ name: String, target: FilesystemNode) {
 		self.targetNode = target
-		super.init(name: name, children: [])
+		super.init(name, children: [])
 	}
 
-	public override func finalize() {
+	public override func performCreate() throws {
 		guard let validRoot = self.path else {
+			throw TemplateValidationError.invalidInternalPath
 			fatalError("Couldn't create symlink!")
 		}
 		guard let validTarget = self.targetNode.path else {
-			fatalError("Couldn't find symlink target \(self.targetNode)!")
+			print("Couldn't find symlink target \(self.targetNode)!")
+			throw TemplateValidationError.noSymlinkTargetSpecified
 		}
 
 		do {
@@ -107,6 +126,7 @@ public class SymlinkNode: FilesystemNode {
 			//try FileManager.default.createDirectory(atPath: finalValidPath.path, withIntermediateDirectories: true, attributes: nil)
 		} catch let error as NSError {
 			print(error.localizedDescription);
+			throw TemplateDeploymentError.createSymbolicLinkError(error: error)
 		}
 	}
 
