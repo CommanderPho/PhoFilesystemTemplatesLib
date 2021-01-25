@@ -4,3 +4,4 @@
 /*.xcodeproj
 xcuserdata/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+*.xctimeline
