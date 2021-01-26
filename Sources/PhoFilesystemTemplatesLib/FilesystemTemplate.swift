@@ -46,7 +46,6 @@ public class FilesystemTemplate: Template {
 		self.templateName = templateName
 		self.templateDescription = templateDescription
 		self.rootNode = rootNode
-//		self.deployPath = defaultDeployPath
 		if let validUrl = defaultDeployPath {
 			self.updateDeployPath(validUrl)
 		}
@@ -62,7 +61,6 @@ public class FilesystemTemplate: Template {
 			try self.validate()
 		} catch let error {
 			print("validate() failed with error: \(error).\n Template still not deployable.")
-//			fatalError("error: \(error)")
 		}
 	}
 
@@ -74,7 +72,6 @@ public class FilesystemTemplate: Template {
 		}
 		//Otherwise we try to use the validRoot to build all children objects recurrsively from the root
 		try self.rootNode.build(validRoot: validRoot)
-		//If no fatal errors are thrown, then we're good!
 	}
 
 
@@ -87,7 +84,6 @@ public class FilesystemTemplate: Template {
 		// If the user specified a deploy path, set that before deploying
 		if let validOverrideDeployPath = deployPath {
 			self.updateDeployPath(validOverrideDeployPath)
-			// Check: this object doesn't need to be built or anything after setting self.deployPath, right?
 		}
 		try self.rootNode.deploy()
 	}

@@ -44,6 +44,31 @@ public struct ExampleTemplates {
 	}
 
 
+
+
+
+
+
+	public static func deployStandardXCodeProjectHierarchyToExtantFolder(to: URL) {
+		let template = Self.xCodeHierarchyTemplate
+		guard let destParentPath = to.baseURL else {
+			fatalError("Base path doesn't exist! \(to)")
+		}
+
+		let currFolderName = to.lastPathComponent
+		template.rootNode.name = currFolderName
+
+		do {
+			try template.deploy(specifyingDeployPath: destParentPath)
+			print("Template written to \(destParentPath)")
+		} catch let error {
+			fatalError("Failed to create \(destParentPath) template at \(to)! Error: \(error)")
+		}
+	}
+
+
+
+
 	public static func deployUMichClassFolder(withName name: String, to: URL) {
 		let template = Self.umichSemesterClassFolder
 		template.rootNode.name = name
