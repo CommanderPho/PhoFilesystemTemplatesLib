@@ -1,7 +1,13 @@
 import XCTest
 @testable import PhoFilesystemTemplatesLib
+import SwiftPackageTestingHelpersLib
 
-final class PhoFilesystemTemplatesLibTests: XCTestCase {
+final class PhoFilesystemTemplatesLibTests: XCTestCase, OutputFileProducingProtocol {
+
+	static var folderMode: TestFilesMode = .UniqueFolderPerTestClass
+
+	static var rootTestingParentFolder: URL { return URL(fileURLWithPath: "/Users/pho/Desktop/PhoFilesystemTemplatesLib Testing", isDirectory: true); }
+
 
 //	func testExample() {
 //        // This is an example of a functional test case.
@@ -58,14 +64,17 @@ final class PhoFilesystemTemplatesLibTests: XCTestCase {
 		let newTemplate = FilesystemTemplate(rootNode: root, templateName: "XCode Hierarchy Template", templateDescription: "Creates the default hierarchy for my custom packages in XCode.")
 		XCTAssertThrowsError(try newTemplate.deploy(), "Template was not provided with a deploy path, but did not throw an error on deploy")
 
+		guard let validTestDir = self.getCurrentTestSubdirectory() else {
+			fatalError()
+		}
+//		newTemplate.updateDeployPath(validTestDir)
 
-		newTemplate.deploy(specifyingDeployPath: <#T##URL?#>)
-
-
+		// Deploy
+		XCTAssertNoThrow(try newTemplate.deploy(specifyingDeployPath: validTestDir))
 
 	}
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testXCodeExample", testXCodeExample),
     ]
 }

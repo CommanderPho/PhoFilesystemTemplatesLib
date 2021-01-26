@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftPackageTestingHelpersLib",
+        "repositoryURL": "https://github.com/CommanderPho/SwiftPackageTestingHelpersLib.git",
+        "state": {
+          "branch": null,
+          "revision": "609e249211e15f82ffb32bf1cf5d3a708e257056",
+          "version": "0.0.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

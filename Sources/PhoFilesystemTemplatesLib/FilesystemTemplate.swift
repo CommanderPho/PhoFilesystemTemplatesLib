@@ -86,7 +86,7 @@ public class FilesystemTemplate: Template {
 	public func deploy(specifyingDeployPath deployPath: URL?) throws {
 		// If the user specified a deploy path, set that before deploying
 		if let validOverrideDeployPath = deployPath {
-			self.deployPath = validOverrideDeployPath
+			self.updateDeployPath(validOverrideDeployPath)
 			// Check: this object doesn't need to be built or anything after setting self.deployPath, right?
 		}
 		try self.rootNode.deploy()
