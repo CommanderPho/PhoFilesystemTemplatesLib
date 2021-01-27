@@ -48,6 +48,14 @@ func deployNsciFolders() {
 	ExampleTemplates.deployUMichClassFolder(withName: "NSCI 614 - Sensory Systems NSCI", to: outFolder)
 }
 
+
+
+func deployXcodeFolderHierarchyTemplateFolders() {
+
+	let outFolder = URL(fileURLWithPath: "/Users/pho/repo/PhoQuickLogNote/PhoQuickLogNote", isDirectory: true)
+	ExampleTemplates.deployStandardXCodeProjectHierarchyToExtantFolder(to: outFolder)
+}
+
 //
 //let template = example1()
 //
@@ -58,7 +66,9 @@ func deployNsciFolders() {
 //
 //try template.validate()
 
+deployXcodeFolderHierarchyTemplateFolders()
+//deployNsciFolders()
 
-deployNsciFolders()
+
 
 

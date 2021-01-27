@@ -51,10 +51,11 @@ public struct ExampleTemplates {
 
 	public static func deployStandardXCodeProjectHierarchyToExtantFolder(to: URL) {
 		let template = Self.xCodeHierarchyTemplate
-		guard let destParentPath = to.baseURL else {
-			fatalError("Base path doesn't exist! \(to)")
-		}
+//		guard let destParentPath = to.deletingLastPathComponent() else {
+//			fatalError("Base path doesn't exist! \(to)")
+//		}
 
+		let destParentPath = to.deletingLastPathComponent()
 		let currFolderName = to.lastPathComponent
 		template.rootNode.name = currFolderName
 

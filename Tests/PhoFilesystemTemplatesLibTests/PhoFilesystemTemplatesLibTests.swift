@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 @testable import PhoFilesystemTemplatesLib
 import SwiftPackageTestingHelpersLib
@@ -71,10 +72,19 @@ final class PhoFilesystemTemplatesLibTests: XCTestCase, OutputFileProducingProto
 
 		// Deploy
 		XCTAssertNoThrow(try newTemplate.deploy(specifyingDeployPath: validTestDir))
+	}
+
+
+	func testXCodeDeployToExistingFolderExample() {
+
+		let outFolder = URL(fileURLWithPath: "/Users/pho/repo/PhoQuickLogNote/PhoQuickLogNote", isDirectory: true)
+		ExampleTemplates.deployStandardXCodeProjectHierarchyToExtantFolder(to: outFolder)
+//		XCTAssertNoThrow(try newTemplate.deploy(specifyingDeployPath: validTestDir))
 
 	}
 
     static var allTests = [
+		("testXCodeDeployToExistingFolderExample", testXCodeDeployToExistingFolderExample),
         ("testXCodeExample", testXCodeExample),
     ]
 }
